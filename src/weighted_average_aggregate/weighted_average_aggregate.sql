@@ -13,10 +13,21 @@ $$ language 'sql' strict;
 create function wavg_final(
   accums numeric[2]
 ) returns numeric as $$
+begin
 
-  select accums[1] / accums[2];
+  -- Check if divisor is 0 or null
+  if accums[2] is null or accums[2] = 0 then
 
-$$ language 'sql' strict;
+    return null;
+
+  else
+
+    return accums[1] / accums[2];
+
+  end if;
+
+end;
+$$ language 'plpgsql' strict;
 
 create aggregate wavg(numeric, numeric) (
   INITCOND = '{0,0}',
