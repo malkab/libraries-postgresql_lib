@@ -14,7 +14,9 @@ insert into a.data values
 (5,10,'b'),
 (8,15,'b');
 
-select avg(val), wavg(val, wei)
+select
+  avg(val),
+  wavg(val, wei)
 from a.data
 group by grp;
 
