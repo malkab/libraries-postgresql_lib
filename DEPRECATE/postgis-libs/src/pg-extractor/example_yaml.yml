@@ -1,0 +1,24 @@
+datasource: &ds00
+    host: viv3.cica.es
+    port: 5454
+    user: catastro_admin
+    pass: ert212003
+    database: scandal
+
+datasource: &ds01
+    host: viv3.cica.es
+    port: 5454
+    user: catastro_admin
+    pass: ert212003
+    database: catastro
+
+tables:
+  - table: agregaciones_rejilla.mvw__c_par_grid_125_p_centroid
+    datasource: *ds00
+    newname: b
+    renameconstraints: Yes
+
+  - table: catastro_normalized_import_20150330.constru
+    datasource: *ds01
+    newname: g
+    renameconstraints: No

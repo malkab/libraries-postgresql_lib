@@ -1,0 +1,1 @@
+This is a tiny Python script to create __\copy to__, __schema__, and __\copy from__ scripts for a PostGIS table.

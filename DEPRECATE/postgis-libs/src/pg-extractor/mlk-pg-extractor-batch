@@ -1,0 +1,62 @@
+#!/usr/bin/env python3
+# coding=UTF8
+
+import argparse, sys, pg_extractor.pg_extractor as pg_extractor, yaml
+
+# Get parameters
+
+parser = argparse.ArgumentParser(description="Batch version of mlk-pg-extractor. Uses a YAML file to define the export process.")
+
+parser.add_argument("-b", default=False, action="store_true", help="Generate a single file for each script type")
+parser.add_argument("yaml", help="YAML file to process.")
+
+args = parser.parse_args()
+
+# Read YAML
+yml = yaml.load(open(args.yaml))
+
+# Outputs for batch mode
+copyScript = ""
+exportScript = ""
+
+for t in yml["tables"]:
+    # Get the datasource
+    ds = t["datasource"]
+
+    a, b = pg_extractor.scripts(t["table"], host=ds["host"], port=ds["port"], user=ds["user"], database=ds["database"], password=ds["pass"], newTableName=t["newname"], renameConstraints=t["renameconstraints"])
+
+    # Create new table name
+    newTableFullName = t["newname"] if t["newname"] else t["table"]
+    newTableName = newTableFullName.split(".")[1] if "." in newTableFullName \
+                        else newTableFullName
+
+    # Check batch mode
+    if not args.b:
+        # Write load script
+        loadScript = open("%s-Table_DDL.sql" % newTableName, "w")
+        loadScript.write(a)
+        loadScript.close()
+
+        # Write copy script
+        copyScript = open("%s-Copy.sql" % newTableName, "w")
+        copyScript.write(b)
+        copyScript.close()
+
+    else:
+        copyScript += a+"\n\n\n"
+        exportScript += b+"\n\n\n"
+
+
+# Write final scripts if in batch mode
+if args.b:
+    # Write load script
+    loadScript = open("Batch-Table_DDL.sql", "w")
+    loadScript.write(copyScript)
+    loadScript.close()
+
+    # Write copy script
+    copyScript = open("Batch-Copy.sql", "w")
+    copyScript.write(exportScript)
+    copyScript.close()
+
+sys.exit(0)
