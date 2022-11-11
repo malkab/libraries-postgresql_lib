@@ -55,8 +55,8 @@ begin
 
   -- Create clocking table
   create table if not exists mlk_clocking(
-    clock_name varchar(25),
-    step_name varchar(25),
+    clock_name varchar,
+    step_name varchar,
     time timestamp
   );
 
